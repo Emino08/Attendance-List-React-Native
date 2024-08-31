@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://192.168.199.61:8000/api/';
+const API_URL = 'http://192.168.175.194:8000/api/';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -185,12 +185,16 @@ export const getLecturers = async () => {
 
 export const createLecturer = async (lecturerData) => {
     const headers = await getAuthHeader();
-    return api.post('lecturers/', lecturerData, { headers });
+    return api.post('lecturers/', {
+        ...lecturerData,
+        modules: lecturerData.modules}, { headers });
 };
 
 export const updateLecturer = async (id, lecturerData) => {
     const headers = await getAuthHeader();
-    return api.put(`lecturers/${id}/`, lecturerData, { headers });
+    return api.put(`lecturers/${id}/`, {
+        ...lecturerData,
+        modules: lecturerData.modules}, { headers });
 };
 
 export const deleteLecturer = async (id) => {

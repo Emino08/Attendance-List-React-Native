@@ -21,8 +21,11 @@ export default function LecturerManagementScreen() {
         try {
             const response = await getLecturers();
             setLecturers(response.data);
+            console.log('Lecturers:', response.data)
         } catch (error) {
             console.error('Failed to fetch lecturers', error);
+            console.log('Error message:', error.message);
+            console.log('Error response:', error.response);
             Alert.alert('Error', 'Failed to fetch lecturers. Please try again.');
         }
     };
@@ -45,6 +48,8 @@ export default function LecturerManagementScreen() {
             Alert.alert('Success', 'Lecturer created successfully.');
         } catch (error) {
             console.error('Failed to create lecturer', error);
+            console.log('Error message:', error.message);
+            console.log('Error response:', error.response);
             Alert.alert('Error', 'Failed to create lecturer. Please try again.');
         }
     };
@@ -98,7 +103,7 @@ export default function LecturerManagementScreen() {
                 <TextInput
                     style={styles.input}
                     placeholder="First Name"
-                    value={newLecturer.first_name}
+                    value={newLecturer?.first_name}
                     onChangeText={(text) => setNewLecturer({...newLecturer, first_name: text})}
                     placeholderTextColor="gray"
                 />
@@ -107,6 +112,13 @@ export default function LecturerManagementScreen() {
                     placeholder="Last Name"
                     value={newLecturer.last_name}
                     onChangeText={(text) => setNewLecturer({...newLecturer, last_name: text})}
+                    placeholderTextColor="gray"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={newLecturer.email}
+                    onChangeText={(text) => setNewLecturer({...newLecturer, email: text})}
                     placeholderTextColor="gray"
                 />
                 <TextInput
@@ -144,9 +156,9 @@ export default function LecturerManagementScreen() {
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.itemContainer}>
-                        <Text style={styles.itemName}>{`${item.user.first_name} ${item.user.last_name}`}</Text>
-                        <Text style={styles.itemDetails}>{`Staff ID: ${item.staff_id}`}</Text>
-                        <Text style={styles.itemDetails}>Modules: {item.modules.map(m => modules.find(mod => mod.id === m)?.name).join(', ')}</Text>
+                        <Text style={styles.itemName}>{`${item?.first_name} ${item?.last_name}`}</Text>
+                        <Text style={styles.itemDetails}>{`Staff ID: ${item?.staff_id}`}</Text>
+                        <Text style={styles.itemDetails}>Modules: {item?.modules.map(m => modules?.find(mod => mod.id === m)?.name).join(', ')}</Text>
                         <CustomButton title="Edit" onPress={() => openEditModal(item)} />
                         <CustomButton title="Delete" onPress={() => handleDeleteLecturer(item.id)} />
                     </View>
@@ -164,7 +176,7 @@ export default function LecturerManagementScreen() {
                         <TextInput
                             style={styles.modalInput}
                             placeholder="First Name"
-                            value={editingLecturer ? editingLecturer.user.first_name : ''}
+                            value={editingLecturer ? editingLecturer?.user?.first_name : ''}
                             onChangeText={(text) => setEditingLecturer({
                                 ...editingLecturer,
                                 user: {...editingLecturer.user, first_name: text}
@@ -174,7 +186,7 @@ export default function LecturerManagementScreen() {
                         <TextInput
                             style={styles.modalInput}
                             placeholder="Last Name"
-                            value={editingLecturer ? editingLecturer.user.last_name : ''}
+                            value={editingLecturer ? editingLecturer?.user?.last_name : ''}
                             onChangeText={(text) => setEditingLecturer({
                                 ...editingLecturer,
                                 user: {...editingLecturer.user, last_name: text}
@@ -184,7 +196,7 @@ export default function LecturerManagementScreen() {
                         <TextInput
                             style={styles.modalInput}
                             placeholder="Staff ID"
-                            value={editingLecturer ? editingLecturer.staff_id : ''}
+                            value={editingLecturer ? editingLecturer?.staff_id : ''}
                             onChangeText={(text) => setEditingLecturer({...editingLecturer, staff_id: text})}
                             placeholderTextColor="gray"
                         />

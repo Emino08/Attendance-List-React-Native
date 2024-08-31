@@ -1,31 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles';
 import CustomButton from '../components/CustomButton';
-import FingerprintAuth from "../context/FingerprintAuth";
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, user } = useAuth();
+    const [isFingerprintAvailable, setIsFingerprintAvailable] = useState(false);
+    const { login, fingerprintLogin } = useAuth();
+
+    useEffect(() => {
+        checkFingerprintAvailability();
+    }, []);
+
+    const checkFingerprintAvailability = async () => {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+        setIsFingerprintAvailable(hasHardware && isEnrolled);
+    };
 
     const handleLogin = async () => {
-        const success = await login(email, password);
-        if (success) {
-            // Handle successful login
-            navigation.replace('Dashboard');
+        const result = await login(email, password);
+        if (result.success) {
+            if (result.requiresPasswordChange) {
+                navigation.replace('ChangePassword');
+            } else {
+                navigation.replace('Dashboard');
+            }
         } else {
             Alert.alert('Login Failed', 'Please check your credentials and try again.');
         }
     };
 
     const handleFingerprintAuth = async () => {
-        // Implement fingerprint authentication logic here
-        // For demonstration purposes, we'll just call the login function
-        const success = await login(email, password);
-        if (success) {
-            navigation.replace('Dashboard');
+        const result = await fingerprintLogin();
+        if (result.success) {
+            // navigation.replace('Dashboard');
+            Alert.alert('Login Successful', 'You have successfully logged in using your fingerprint.');
         } else {
             Alert.alert('Login Failed', 'Fingerprint authentication failed. Please try again or use email/password.');
         }
@@ -50,7 +63,13 @@ export default function LoginScreen({ navigation }) {
                 placeholderTextColor="gray"
             />
             <CustomButton title="Login" onPress={handleLogin} />
-            <FingerprintAuth onAuthenticate={handleFingerprintAuth} />
+            {isFingerprintAvailable && (
+                <CustomButton
+                    title="Login with Fingerprint"
+                    onPress={handleFingerprintAuth}
+                    style={localStyles.fingerprintButton}
+                />
+            )}
         </View>
     );
 }
@@ -58,6 +77,10 @@ export default function LoginScreen({ navigation }) {
 const localStyles = StyleSheet.create({
     centeredContainer: {
         justifyContent: 'center',
+    },
+    fingerprintButton: {
+        marginTop: 10,
+        backgroundColor: '#4CAF50',
     },
 });
 // import React, { useState } from 'react';
