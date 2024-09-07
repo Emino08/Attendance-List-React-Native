@@ -402,7 +402,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 
 const AuthContext = createContext();
 
-const API_URL = 'http://192.168.175.194:8000';  // Replace with your actual API URL
+const API_URL = 'http://192.168.199.61:8000';  // Replace with your actual API URL
 
 axios.create({
     adapter: 'fetch',
